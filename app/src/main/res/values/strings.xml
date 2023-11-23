@@ -2,4 +2,7 @@
     <string name="app_name">NewsApp</string>
     <string name="lbl_news">News</string>
     <string name="lbl_retry">Retry</string>
+    <string name="lbl_new_to_old">New to Old</string>
+    <string name="lbl_old_to_new">Old to New</string>
+    <string name="lbl_published_at">Published at</string>
 </resources>

@@ -16,14 +16,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.newsapp.R
 import com.example.newsapp.ui.theme.NewsAppTheme
+import com.example.newsapp.utils.convertToDateInStandardFormat
+import com.example.newsapp.utils.convertToStandardTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,11 +76,37 @@ fun Article(
             fontSize = 16.sp,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(8.dp),
+                .padding(top = 8.dp, start = 8.dp, end = 8.dp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface
         )
+
+        if (article.publishDate != null && article.publishTime != null) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    ) { append(text = stringResource(id = R.string.lbl_published_at) + ": ") }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp
+                        )
+                    ) { append("${article.publishDate}, ${article.publishTime}") }
+                },
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(8.dp)
+            )
+        } else {
+            // if date or time is not present, show some bottom padding
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
 
@@ -88,7 +120,9 @@ fun NewsItem_Preview() {
         title = "Title",
         articleUrl = null,
         description = "Description",
-        publishTimeInMillis = 10000000L
+        publishTimeInMillis = 10000000L,
+        publishTime = (10000000L).convertToStandardTime(),
+        publishDate = (10000000L).convertToDateInStandardFormat()
     )
     Surface {
         NewsAppTheme {

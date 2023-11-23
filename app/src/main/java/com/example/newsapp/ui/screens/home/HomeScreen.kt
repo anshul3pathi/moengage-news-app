@@ -1,6 +1,5 @@
 package com.example.newsapp.ui.screens.home
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,17 +14,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,13 +49,24 @@ fun HomeScreenRoute(
     viewModel: HomeScreenViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    HomeScreen(state = state, onClickRetry = viewModel::onRetryFetchingArticles)
+    HomeScreen(
+        state = state,
+        onClickRetry = viewModel::onRetryFetchingArticles,
+        onClickNewToOld = {
+            viewModel.onChangeSortOrderOfArticlesTo(articlesSortOrder = ArticlesSortOrder.NEW_TO_OLD)
+        },
+        onClickOldToNew = {
+            viewModel.onChangeSortOrderOfArticlesTo(articlesSortOrder = ArticlesSortOrder.OLD_TO_NEW)
+        }
+    )
 }
 
 @Composable
 private fun HomeScreen(
     state: HomeScreenState,
     onClickRetry: () -> Unit,
+    onClickNewToOld: () -> Unit,
+    onClickOldToNew: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -59,7 +77,11 @@ private fun HomeScreen(
         when (state) {
             is HomeScreenState.Error -> HomeScreenError(onClickRetry = onClickRetry)
             HomeScreenState.Loading -> HomeScreenLoading()
-            is HomeScreenState.Success -> HomeScreenSuccess(articles = state.articles)
+            is HomeScreenState.Success -> HomeScreenSuccess(
+                articles = state.articles,
+                onClickNewToOld = onClickNewToOld,
+                onClickOldToNew = onClickOldToNew
+            )
         }
     }
 }
@@ -67,11 +89,16 @@ private fun HomeScreen(
 @Composable
 private fun BoxScope.HomeScreenSuccess(
     articles: List<ArticleUi>,
+    onClickNewToOld: () -> Unit,
+    onClickOldToNew: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uriHandler = LocalUriHandler.current
     Column(modifier = modifier.align(Alignment.Center)) {
-        HomeScreenTopBar()
+        HomeScreenTopBar(
+            onClickNewToOld = onClickNewToOld,
+            onClickOldToNew = onClickOldToNew
+        )
 
         LazyColumn(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
             items(items = articles) { article ->
@@ -87,11 +114,17 @@ private fun BoxScope.HomeScreenSuccess(
 }
 
 @Composable
-fun HomeScreenTopBar(modifier: Modifier = Modifier) {
+fun HomeScreenTopBar(
+    onClickOldToNew: () -> Unit,
+    onClickNewToOld: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(56.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(id = R.string.lbl_news),
@@ -99,6 +132,38 @@ fun HomeScreenTopBar(modifier: Modifier = Modifier) {
             fontSize = 28.sp,
             fontWeight = FontWeight.Normal
         )
+
+        Box {
+            var showDropDownMenu by remember { mutableStateOf(false) }
+            IconButton(onClick = { showDropDownMenu = true }) {
+                Icon(imageVector = Icons.Rounded.DateRange, contentDescription = null)
+            }
+
+            DropdownMenu(
+                expanded = showDropDownMenu,
+                onDismissRequest = { showDropDownMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.lbl_new_to_old))
+                    },
+                    onClick = {
+                        onClickNewToOld()
+                        showDropDownMenu = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = R.string.lbl_old_to_new))
+                    },
+                    onClick = {
+                        onClickOldToNew()
+                        showDropDownMenu = false
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -134,7 +199,10 @@ fun BoxScope.HomeScreenError(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenTopBar_Preview() {
-    HomeScreenTopBar()
+    HomeScreenTopBar(
+        onClickNewToOld = {},
+        onClickOldToNew = {}
+    )
 }
 
 @Preview(showBackground = true)
@@ -154,7 +222,11 @@ private fun HomeScreenSuccess_Preview() {
     NewsAppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxSize()) {
-                HomeScreenSuccess(articles = articles)
+                HomeScreenSuccess(
+                    articles = articles,
+                    onClickNewToOld = {},
+                    onClickOldToNew = {}
+                )
             }
         }
     }
@@ -166,7 +238,7 @@ fun HomeScreenError_Preview() {
     NewsAppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxSize()) {
-                HomeScreenError(onClickRetry = { /*TODO*/ })
+                HomeScreenError(onClickRetry = {})
             }
         }
     }
