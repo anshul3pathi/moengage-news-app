@@ -49,7 +49,8 @@ fun Article(
         Image(
             painter = rememberAsyncImagePainter(
                 model = article.imageUrl,
-                placeholder = painterResource(id = R.drawable.ic_placeholder)
+                placeholder = painterResource(id = R.drawable.ic_placeholder),
+                error = painterResource(id = R.drawable.ic_error)
             ),
             contentDescription = null,
             modifier = Modifier
@@ -112,7 +113,7 @@ fun Article(
 
 @Preview
 @Composable
-fun NewsItem_Preview() {
+private fun NewsItem_Preview() {
     val article = ArticleUi(
         id = "id",
         imageUrl = null,

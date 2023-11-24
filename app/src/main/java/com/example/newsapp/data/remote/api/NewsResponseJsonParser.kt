@@ -7,6 +7,10 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * Custom implementation for parsing the news response from the json api.
+ * This parser implementation uses JSONObject class for parsing.
+ */
 class NewsResponseJsonParser : NewsResponseParser {
     override fun parse(response: Response): NewsResponse? {
         return try {

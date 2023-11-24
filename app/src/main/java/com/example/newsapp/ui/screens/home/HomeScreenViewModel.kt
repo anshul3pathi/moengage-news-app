@@ -23,6 +23,7 @@ class HomeScreenViewModel(
     }
 
     fun onRetryFetchingArticles() {
+        _state.update { HomeScreenState.Loading }
         getArticles()
     }
 

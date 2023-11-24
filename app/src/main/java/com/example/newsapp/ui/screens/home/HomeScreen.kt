@@ -114,7 +114,7 @@ private fun BoxScope.HomeScreenSuccess(
 }
 
 @Composable
-fun HomeScreenTopBar(
+private fun HomeScreenTopBar(
     onClickOldToNew: () -> Unit,
     onClickNewToOld: () -> Unit,
     modifier: Modifier = Modifier
@@ -173,7 +173,7 @@ private fun BoxScope.HomeScreenLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BoxScope.HomeScreenError(
+private fun BoxScope.HomeScreenError(
     onClickRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -198,7 +198,7 @@ fun BoxScope.HomeScreenError(
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenTopBar_Preview() {
+private fun HomeScreenTopBar_Preview() {
     HomeScreenTopBar(
         onClickNewToOld = {},
         onClickOldToNew = {}
@@ -234,7 +234,7 @@ private fun HomeScreenSuccess_Preview() {
 
 @Preview
 @Composable
-fun HomeScreenError_Preview() {
+private fun HomeScreenError_Preview() {
     NewsAppTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.fillMaxSize()) {

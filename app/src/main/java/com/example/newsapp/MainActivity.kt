@@ -18,10 +18,9 @@ class MainActivity : ComponentActivity() {
             NewsAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    HomeScreenRoute()
-                }
+                    color = MaterialTheme.colorScheme.background,
+                    content = { HomeScreenRoute() }
+                )
             }
         }
     }

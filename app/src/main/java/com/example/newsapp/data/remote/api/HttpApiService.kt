@@ -11,6 +11,9 @@ private const val NEWS_API_ENDPOINT = "https://candidate-test-data-moengage.s3.a
 private const val UTF8 = "UTF-8"
 private const val END_LINE_CHARACTER = "\n"
 
+/**
+ * Custom implementation of the ApiService using HttpURLConnection
+ */
 class HttpApiService : ApiService {
 
     override suspend fun fetchNewsArticles(): Response = withContext(Dispatchers.IO) {
